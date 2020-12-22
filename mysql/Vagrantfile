@@ -2,6 +2,9 @@ require_relative '../.plugins/key_authorization'
 
 Vagrant.configure('2') do |config|
 
+  config.vm.provider "libvirt"
+  config.vm.provider "virtualbox"
+
   authorize_key_for_root config, '~/.ssh/id_rsa.pub'
   config.hostmanager.enabled = true
   config.hostmanager.manage_host = true

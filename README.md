@@ -6,6 +6,19 @@ Vagrant test environment with prepared scenarios.
 Getting started
 ---------------
 
+### Prepare workstation
+
+1. Install vagrant. You can download the latest version [here](https://www.vagrantup.com/downloads.html).
+2. Install virtualbox and/or libvirt.
+3. Install vagrant plugins. You only need to install `vagrant-mutate` and `vagrant-libvirt` if you are using libvirt as provider.
+
+```
+vagrant plugin install vagrant-hostmanager
+vagrant plugin install vagrant-libvirt
+vagrant plugin install vagrant-mutate
+vagrant plugin install vagrant-share
+```
+
 ### Select environment
 
 Environments are seperated in different directories which are self contained with the exception of plugins/custom extensions for vagrant.
