@@ -1,22 +1,42 @@
 Proving Ground
 ==============
 
-Vagrant test environment for automation and applications/scripts.
+Vagrant test environment with prepared scenarios.
 
-## Environment Control
+Getting started
+---------------
 
-### Create environment
+### Select environment
 
-    $ vagrant up
+Environments are seperated in different directories which are self contained with the execption of plugins/custom extensions for vagrant.
+
+```
+cd <directory>
+```
+
+### Start environment
+
+```
+vagrant up
+```
 
 ### Destroy environment
 
-    $ vagrant destroy -f
+```
+vagrant destroy -f
+```
 
 ### Update environment
 
-    $ vagrant box update
-    $ vagrant box prune
+```
+vagrant box update
+```
+
+### Cleanup environment
+
+```
+vagrant box prune
+```
 
 ## Features
 
@@ -36,7 +56,7 @@ This of course can also be specific to one user instead of `%sudo`.
 
 Plugin: `plugins/key_authorization.rb`
 
-Ensures the users public key is situated on every virtual machine. This way a passwordless login is possible.
+Ensures the users public key is situated on every virtual machine. This way a passwordless login is possible.gg
 
 ### Ansible Provisioning
 
@@ -49,3 +69,4 @@ ansible-galaxy install <author.role>
 ## License
 
 MIT
+
