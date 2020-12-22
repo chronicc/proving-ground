@@ -38,6 +38,14 @@ Plugin: `plugins/key_authorization.rb`
 
 Ensures the users public key is situated on every virtual machine. This way a passwordless login is possible.
 
+### Ansible Provisioning
+
+New roles need to be added from within the `.ansible` directory with the command:
+
+```
+ansible-galaxy install <author.role>
+```
+
 ## License
 
 MIT
