@@ -1,0 +1,15 @@
+# /etc/my.cnf.d/galera.cnf
+
+[mysqld]
+bind-address="0.0.0.0"
+binlog_format="ROW"
+default-storage-engine="innodb"
+innodb_autoinc_lock_mode="2"
+wsrep_on="ON"
+wsrep_provider=/usr/lib64/galera/libgalera_smm.so
+wsrep_cluster_name="<cluster_name>"
+wsrep_cluster_address="gcomm://<ip1>,<ip2>,<ip3>"
+wsrep_sst_method="rsync"
+wsrep_node_address="<own_ip>"
+wsrep_node_name="<hostname>"
+
