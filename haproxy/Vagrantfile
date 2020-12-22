@@ -1,0 +1,55 @@
+require_relative '../plugins/key_authorization'
+
+Vagrant.configure('2') do |config|
+
+  #### CONFIG MACHINES ####
+  CPU = 2
+  HOSTNAME = 'haproxy'
+  MEMORY = 2048
+  N = 1
+  #### END CONFIG #########
+
+  authorize_key_for_root config, '~/.ssh/id_rsa.pub'
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+  config.hostmanager.include_offline = false
+  config.hostmanager.ip_resolver = proc do |vm, resolving_vm|
+    if hostname = (vm.ssh_info && vm.ssh_info[:host])
+      ip = nil
+      command = "ip addr show dev eth1 | grep -oP 'inet [0-9\.]+' | head -n1 2>&1"
+      vm.communicate.sudo(command) do |type, data|
+        ip = data.split("\n").first[/(\d+\.\d+\.\d+\.\d+)/, 1]
+      end
+      ip
+    end
+  end
+
+  (1..N).each do |machine_id|
+
+    config.vm.define "#{HOSTNAME}#{machine_id}" do |host|
+      host.vm.box = 'centos/7'
+      host.vm.network 'private_network', type: 'dhcp'
+      host.vm.hostname = "#{HOSTNAME}#{machine_id}.vagrant"
+      if machine_id == N
+        host.vm.provision 'bootstrap', type: 'ansible', run: 'once' do |ansible|
+          ansible.compatibility_mode = '2.0'
+          ansible.limit = 'all'
+          ansible.playbook = 'ansible/bootstrap.yml'
+        end
+        host.vm.provision 'site', type: 'ansible', run: 'always' do |ansible|
+          ansible.compatibility_mode = '2.0'
+          ansible.limit = 'all'
+          ansible.playbook = 'ansible/site.yml'
+        end
+      end
+    end
+
+    config.vm.provider :virtualbox do |vm|
+      vm.customize ["modifyvm", :id, "--memory", MEMORY]
+      vm.customize ["modifyvm", :id, "--cpus", CPU]
+    end
+
+  end
+end

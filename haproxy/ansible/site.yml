@@ -1,0 +1,62 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: willshersystems.sshd
+  pre_tasks:
+
+    - name: set selinux config to permissive
+      selinux:
+        state: permissive
+        policy: targeted
+
+    - name: set selinux live to permissive
+      command: '/usr/sbin/setenforce 0'
+
+    - name: install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - bash-completion
+        - curl
+        - git
+        - htop
+        - httpd
+        - mlocate
+        - screen
+        - vim
+        - wget
+
+    - name: remove packages
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - firewalld
+        - firewalld-filesystem
+
+  tasks:
+
+    - name: enable acmetool repository
+      yum_repository:
+        name: acmetool
+        baseurl: https://copr-be.cloud.fedoraproject.org/results/hlandau/acmetool/epel-7-$basearch/
+        description: Copr repo for acmetool owned by hlandau
+        enabled: yes
+        gpgkey: https://copr-be.cloud.fedoraproject.org/results/hlandau/acmetool/pubkey.gpg
+
+    - name: install haproxy packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - acmetool
+        - haproxy
+
+    - name: start haproxy
+      service:
+        name: haproxy
+        enabled: yes
+        state: started
+
