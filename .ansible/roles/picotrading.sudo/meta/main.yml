@@ -1,0 +1,17 @@
+---
+
+galaxy_info:
+  author: Jiri Tyr
+  description: Role that manages /etc/sudoers through a set of variables
+  license: MIT
+  min_ansible_version: 1.7
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+  categories:
+    - system
+dependencies: []

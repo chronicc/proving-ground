@@ -1,0 +1,20 @@
+---
+
+- name: Test distribution
+  assert:
+    that: >
+      ansible_os_family == "RedHat" or
+      ansible_os_family == "Debian"
+
+- include: package.yaml
+
+- name: Create /etc/sudoers file
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers
+    owner: root
+    group: root
+    mode: 0440
+    validate: "{{ sudo_visudo }} -cf %s"
+  tags:
+    - sudo_config

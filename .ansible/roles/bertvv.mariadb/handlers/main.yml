@@ -3,7 +3,7 @@
 
 - name: restart mariadb
   service:
-    name: "{{ mariadb_service }}"
+    name: mariadb
     state: restarted
 
 - name: restart firewalld

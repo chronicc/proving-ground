@@ -1,0 +1,23 @@
+---
+
+- name: 10forge.docker
+  scm: git
+  src: https://github.com/10forge/ansible-docker.git
+  version: 0.0.3
+- name: bertvv.mariadb
+  scm: git
+  src: https://github.com/bertvv/ansible-role-mariadb
+  version: v2.0.2
+- name: jdauphant.nginx
+  scm: git
+  src: https://github.com/jdauphant/ansible-role-nginx.git
+  version: v2.13
+- name: picotrading.sudo
+  scm: git
+  src: https://github.com/picotrading/ansible-sudo.git
+  version: master
+- name: willshersystems.sshd
+  scm: git
+  src: https://github.com/willshersystems/ansible-sshd
+  version: v0.5
+

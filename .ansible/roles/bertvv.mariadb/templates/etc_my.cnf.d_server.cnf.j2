@@ -31,9 +31,7 @@ read_rnd_buffer_size           = {{ mariadb_read_rnd_buffer_size }}
 join_buffer_size               = {{ mariadb_join_buffer_size }}
 table_definition_cache         = {{ mariadb_table_definition_cache }}
 table_open_cache               = {{ mariadb_table_open_cache }}
-{% if table_open_cache_instances is defined %}
 table_open_cache_instances     = {{ mariadb_table_open_cache_instances }}
-{% endif %}
 
 innodb_strict_mode             = {{ mariadb_innodb_strict_mode }}
 innodb_file_format_check       = {{ mariadb_innodb_file_format_check }}
