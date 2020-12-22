@@ -1,0 +1,37 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: willshersystems.sshd
+  pre_tasks:
+    - name: set selinux config to permissive
+      selinux:
+        state: permissive
+        policy: targeted
+
+    - name: set selinux live to permissive
+      command: '/usr/sbin/setenforce 0'
+
+    - name: install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - bash-completion
+        - bridge-utils
+        - curl
+        - git
+        - htop
+        - mlocate
+        - screen
+        - vim
+        - wget
+
+    - name: remove packages
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - firewalld
+        - firewalld-filesystem
+

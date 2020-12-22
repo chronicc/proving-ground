@@ -3,7 +3,7 @@
 - name: 10forge.docker
   scm: git
   src: https://github.com/10forge/ansible-docker.git
-  version: 0.0.3
+  version: 0.1.2
 - name: bertvv.mariadb
   scm: git
   src: https://github.com/bertvv/ansible-role-mariadb

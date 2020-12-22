@@ -23,7 +23,7 @@ Vagrant.configure('2') do |config|
   end
 
   HOSTNAME = 'mysql'
-  N = 2
+  N = 1
 
   (1..N).each do |machine_id|
     config.vm.define "#{HOSTNAME}#{machine_id}" do |host|

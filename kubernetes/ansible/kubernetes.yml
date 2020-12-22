@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: 10forge.docker
+      docker_daemon_config:
+        bridge: cbr0
+        iptables: false
+        ip-masq: false
+  pre_tasks:
+    - name: delete docker0 bridge
+      command: "/usr/sbin/ip link set docker0 down && /usr/sbin/ip link del docker0"
+      failed_when: false
+
+    - name: create cbr0 bridge
+      command: "/usr/sbin/ip link add name cbr0 type bridge && /usr/sbin/ip link set cbr0 up"
+      failed_when: false
+
+    - name: disable swap
+      command: "/usr/sbin/swapoff -a"
+
