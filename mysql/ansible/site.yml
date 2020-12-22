@@ -1,0 +1,26 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: bertvv.mariadb
+    - role: willshersystems.sshd
+  tasks:
+
+    - name: install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - curl
+        - git
+        - htop
+        - vim
+
+    - name: remove packages
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - firewalld
+        - firewalld-filesystem
+
