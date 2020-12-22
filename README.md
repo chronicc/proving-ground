@@ -1,10 +1,9 @@
 Proving Ground
 ==============
 
-Vagrant test environment with prepared scenarios
+Vagrant test environment with prepared scenarios.
 
-Getting started
----------------
+## Getting started
 
 ### Prepare workstation
 
@@ -62,7 +61,7 @@ Cmnd_Alias VAGRANT_HOSTMANAGER_UPDATE = /bin/cp */.vagrant.d/tmp/hosts.local /et
 %sudo ALL=(root) NOPASSWD: VAGRANT_HOSTMANAGER_UPDATE
 ```
 
-This of course can also be specific to one user instead of `%sudo`.
+If a machine was not added to the hosts file after being created, run `vagrant hostmanager` manually. Sometimes this fixes the problem.
 
 ### SSH key integration
 
