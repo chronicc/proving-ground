@@ -1,7 +1,7 @@
 Proving Ground
 ==============
 
-Vagrant test environment with prepared scenarios.
+Vagrant test environment with prepared scenarios
 
 Getting started
 ---------------
@@ -9,15 +9,14 @@ Getting started
 ### Prepare workstation
 
 1. Install vagrant. You can download the latest version [here](https://www.vagrantup.com/downloads.html).
-2. Install virtualbox and/or libvirt.
-3. Install vagrant plugins. You only need to install `vagrant-mutate` and `vagrant-libvirt` if you are using libvirt as provider.
-
-```
-vagrant plugin install vagrant-hostmanager
-vagrant plugin install vagrant-libvirt
-vagrant plugin install vagrant-mutate
-vagrant plugin install vagrant-share
-```
+1. Install virtualbox and/or libvirt including dev dependencies (e.g. libvirt-dev on debian distributions).
+1. Install vagrant plugins.
+    ```
+    vagrant plugin install vagrant-hostmanager
+    vagrant plugin install vagrant-libvirt
+    vagrant plugin install vagrant-mutate
+    vagrant plugin install vagrant-share
+    ```
 
 ### Select environment
 
