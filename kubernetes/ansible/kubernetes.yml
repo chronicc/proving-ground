@@ -12,6 +12,8 @@
     - name: import 10forge.docker
       import_role:
         name: 10forge.docker
+      vars:
+        docker_version: 17.06.*
 
     - name: disable swap
       command: "/usr/sbin/swapoff -a"
@@ -66,4 +68,11 @@
         name: kubelet
         state: started
         enabled: true
+
+    - name: update root bashrc
+      lineinfile:
+        path: /root/.bashrc
+        line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
+        state: present
+      when: ansible_hostname == 'kube1'
 

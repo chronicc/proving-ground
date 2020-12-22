@@ -12,6 +12,10 @@
     - name: set selinux live to permissive
       command: '/usr/sbin/setenforce 0'
 
+    - name: set timezone
+      timezone:
+        name: Europe/Berlin
+
     - name: install packages
       yum:
         name: "{{ item }}"
