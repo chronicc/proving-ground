@@ -35,3 +35,8 @@
         - firewalld
         - firewalld-filesystem
 
+    - name: update all packages
+      yum:
+        name: '*'
+        state: latest
+

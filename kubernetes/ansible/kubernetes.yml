@@ -1,21 +1,69 @@
 ---
 - hosts: all
   become: true
-  roles:
-    - role: 10forge.docker
-      docker_daemon_config:
-        bridge: cbr0
-        iptables: false
-        ip-masq: false
-  pre_tasks:
-    - name: delete docker0 bridge
-      command: "/usr/sbin/ip link set docker0 down && /usr/sbin/ip link del docker0"
-      failed_when: false
+  handlers:
+    - name: reload kubelet
+      systemd:
+        name: kubelet
+        state: restarted
+        daemon_reload: true
 
-    - name: create cbr0 bridge
-      command: "/usr/sbin/ip link add name cbr0 type bridge && /usr/sbin/ip link set cbr0 up"
-      failed_when: false
+  tasks:
+    - name: import 10forge.docker
+      import_role:
+        name: 10forge.docker
 
     - name: disable swap
       command: "/usr/sbin/swapoff -a"
+
+    - name: configure sysctl
+      sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        state: present
+      loop:
+        - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
+        - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
+
+    - name: install rpm keys
+      rpm_key:
+        key: "{{ item }}"
+        state: present
+      loop:
+        - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+    - name: enable kubernetes repository
+      yum_repository:
+        name: kubernetes
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el$releasever-$basearch
+        description: kubernetes
+        state: present
+        file: kubernetes
+        enabled: true
+        gpgcheck: true
+        
+    - name: install kubernetes components
+      yum:
+        name: "{{ item }} "
+        state: present
+        update_cache: true
+      loop:
+        - kubelet
+        - kubeadm
+        - kubectl
+
+    - name: set kubernetes cgroup driver same as docker
+      replace:
+        path: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+        regexp: 'cgroup-driver=systemd'
+        replace: 'cgroup-driver=cgroupfs'
+      notify:
+        - reload kubelet
+
+    - name: start kubelet
+      service:
+        name: kubelet
+        state: started
+        enabled: true
 

@@ -2,37 +2,25 @@
 - hosts: all
   become: true
   gather_facts: no
+  name: bootstrap remote redhat systems
   tasks:
-
-    - name: install python (debian)
-      raw: 'apt-get -y install python-minimal python-dev'
+    - name: install python
+      raw: 'yum -y install python'
       register: install
       changed_when:
-        - not install.stdout|search('0 upgraded, 0 newly installed')
-        - not install.stdout|search('command not found')
-      failed_when: false
+        - not install.stdout is search('Nothing to do')
+        - not install.stdout is search('command not found')
 
-    - name: install python (redhat)
-      raw: 'yum -y install python python-pip'
-      register: install
-      changed_when:
-        - not install.stdout|search('Nothing to do')
-        - not install.stdout|search('command not found')
-      failed_when: false
-
-- hosts: all
-  become: true
-  tasks:
-
-    - name: install apt-transport-https (Debian)
-      apt:
-        name: apt-transport-https
-        state: present
-      when: ansible_os_family == 'Debian'
-
-    - name: install epel-release (RedHat)
+    - name: install epel-release
       yum:
         name: epel-release
         state: present
-      when: ansible_os_family == 'RedHat'
+
+    - name: install dependencies
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - ca-certificates
+        - python-pip
 
