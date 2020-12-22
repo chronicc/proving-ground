@@ -27,10 +27,12 @@
     - name: install apt-transport-https (Debian)
       apt:
         name: apt-transport-https
+        state: present
       when: ansible_os_family == 'Debian'
 
     - name: install epel-release (RedHat)
       yum:
         name: epel-release
+        state: present
       when: ansible_os_family == 'RedHat'
 

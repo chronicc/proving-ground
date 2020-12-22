@@ -3,7 +3,15 @@
   become: true
   roles:
     - role: willshersystems.sshd
-  tasks:
+  pre_tasks:
+
+    - name: set selinux config to permissive
+      selinux:
+        state: permissive
+        policy: targeted
+
+    - name: set selinux live to permissive
+      command: '/usr/sbin/setenforce 0'
 
     - name: install packages
       yum:
@@ -14,13 +22,11 @@
         - curl
         - git
         - htop
-        - libselinux-python
+        - httpd
         - mlocate
-        - mosh
         - screen
-        - php
-        - php-mysql
         - vim
+        - wget
 
     - name: remove packages
       yum:
@@ -29,8 +35,32 @@
       with_items:
         - firewalld
         - firewalld-filesystem
-        - NetworkManager
-        - Networkmanager-libnm
-        - NetworkManager-team
-        - NetworkManager-tui
-        - NetworkManager-wifi
+
+  tasks:
+
+    - name: enable php7.2 repository
+      command: 'yum-config-manager --enable remi-72'
+
+    - name: install php
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - php
+        - php-mysql
+        - php-intl
+        - php-xml
+        - php-pecl-zip
+
+    - name: enable acmetool repository
+      yum_repository:
+        name: acmetool
+        baseurl: https://copr-be.cloud.fedoraproject.org/results/hlandau/acmetool/epel-7-$basearch/
+        description: Copr repo for acmetool owned by hlandau
+        enabled: yes
+        gpgkey: https://copr-be.cloud.fedoraproject.org/results/hlandau/acmetool/pubkey.gpg
+
+    - name: install acmetool
+      yum:
+        name: acmetool
+        state: present
