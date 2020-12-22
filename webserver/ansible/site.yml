@@ -15,6 +15,7 @@
         - htop
         - httpd
         - php
+        - php-mysql
         - vim
 
     - name: remove packages
