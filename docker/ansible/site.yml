@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: 10forge.docker
+      docker_daemon_config:
+        storage-opts:
+          - 'overlay2.override_kernel_check=true'
+    - role: willshersystems.sshd
+  pre_tasks:
+
+    - name: install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - bash-completion
+        - curl
+        - git
+        - htop
+        - libselinux-python
+        - mlocate
+        - mosh
+        - python-pip
+        - screen
+        - vim
+
+    - name: remove packages
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - firewalld
+        - firewalld-filesystem
+
+    - name: install python modules
+      pip:
+        name: docker-compose
+        state: present
