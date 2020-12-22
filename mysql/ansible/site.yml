@@ -5,4 +5,16 @@
     - name: import mariadb role
       import_role:
         name: bertvv.mariadb
+      vars:
+        mariadb_databases:
+          - name: my-database
+        mariadb_root_password: insecure
+
+    - name: create mysql client config for root
+      copy:
+        dest: /root/.my.cnf
+        content: |
+          [client]
+          user=root
+          password=insecure
 

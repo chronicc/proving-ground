@@ -1,0 +1,2 @@
+iptables -D INPUT -p tcp --destination-port 4567 -j DROP
+iptables -D INPUT -p tcp --source-port 4567 -j DROP

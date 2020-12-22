@@ -72,3 +72,8 @@
       import_role:
         name: willshersystems.sshd
 
+    - name: add /vagrant/bin directory to PATH
+      copy:
+        dest: /etc/environment
+        content: 'PATH=/vagrant/bin:/bin:/usr/bin:/usr/local/bin'
+
