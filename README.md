@@ -8,7 +8,7 @@ Getting started
 
 ### Select environment
 
-Environments are seperated in different directories which are self contained with the execption of plugins/custom extensions for vagrant.
+Environments are seperated in different directories which are self contained with the exception of plugins/custom extensions for vagrant.
 
 ```
 cd <directory>
