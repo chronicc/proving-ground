@@ -3,10 +3,10 @@ require_relative '../.plugins/key_authorization'
 Vagrant.configure('2') do |config|
 
   #### CONFIG MACHINES ####
-  CPU = 2
-  HOSTNAME = 'centos7'
-  MEMORY = 2048
-  N = 1
+  CPUS = 2
+  HOSTNAME = 'centos7-'
+  MEMORY = 1024
+  N = 3
   #### END CONFIG #########
 
   config.vm.provider "libvirt"
@@ -35,12 +35,12 @@ Vagrant.configure('2') do |config|
       host.vm.network 'private_network', type: 'dhcp'
       host.vm.hostname = "#{HOSTNAME}#{machine_id}.vagrant"
       if machine_id == N
-        host.vm.provision 'bootstrap', type: 'ansible', run: 'once' do |ansible|
+        host.vm.provision 'bootstrap', type: 'ansible' do |ansible|
           ansible.compatibility_mode = '2.0'
           ansible.limit = 'all'
           ansible.playbook = 'ansible/bootstrap.yml'
         end
-        host.vm.provision 'site', type: 'ansible', run: 'always' do |ansible|
+        host.vm.provision 'site', type: 'ansible' do |ansible|
           ansible.compatibility_mode = '2.0'
           ansible.limit = 'all'
           ansible.playbook = 'ansible/site.yml'
@@ -48,10 +48,13 @@ Vagrant.configure('2') do |config|
       end
     end
 
+    config.vm.provider :libvirt do |vm|
+      vm.cpus = CPUS
+      vm.memory = MEMORY
+    end
     config.vm.provider :virtualbox do |vm|
+      vm.customize ["modifyvm", :id, "--cpus", CPUS]
       vm.customize ["modifyvm", :id, "--memory", MEMORY]
-      vm.customize ["modifyvm", :id, "--cpus", CPU]
     end
   end
 end
-

@@ -2,37 +2,78 @@
 - hosts: all
   become: true
   gather_facts: no
+  name: bootstrap remote redhat systems
   tasks:
-
-    - name: install python (debian)
-      raw: 'apt-get -y install python-minimal python-dev'
+    - name: install python
+      raw: 'yum -y install python'
       register: install
       changed_when:
-        - not install.stdout|search('0 upgraded, 0 newly installed')
-        - not install.stdout|search('command not found')
-      failed_when: false
+        - not install.stdout is search('Nothing to do')
+        - not install.stdout is search('command not found')
 
-    - name: install python (redhat)
-      raw: 'yum -y install python python-pip'
-      register: install
-      changed_when:
-        - not install.stdout|search('Nothing to do')
-        - not install.stdout|search('command not found')
-      failed_when: false
-
-- hosts: all
-  become: true
-  tasks:
-
-    - name: install apt-transport-https (Debian)
-      apt:
-        name: apt-transport-https
-        state: present
-      when: ansible_os_family == 'Debian'
-
-    - name: install epel-release (RedHat)
+    - name: install epel-release
       yum:
         name: epel-release
         state: present
-      when: ansible_os_family == 'RedHat'
+
+    - name: install dependencies
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - ca-certificates
+        - python-pip
+
+- hosts: all
+  become: true
+  name: setup basic node constraints
+  tasks:
+    - name: set selinux config to permissive
+      selinux:
+        state: permissive
+        policy: targeted
+
+    - name: set selinux live to permissive
+      command: '/usr/sbin/setenforce 0'
+
+    - name: set timezone
+      timezone:
+        name: Europe/Berlin
+
+    - name: install basic packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - bash-completion
+        - curl
+        - git
+        - htop
+        - libselinux-python
+        - mlocate
+        - mosh
+        - screen
+        - vim
+
+    - name: remove packages
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - firewalld
+        - firewalld-filesystem
+
+    - name: update all packages
+      yum:
+        name: '*'
+        state: latest
+
+    - name: import sshd role
+      import_role:
+        name: willshersystems.sshd
+
+    - name: add /vagrant/bin directory to PATH
+      copy:
+        dest: /etc/environment
+        content: 'PATH=/vagrant/bin:/bin:/usr/bin:/usr/local/bin'
 
