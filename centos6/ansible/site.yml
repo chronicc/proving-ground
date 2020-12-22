@@ -1,0 +1,59 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: willshersystems.sshd
+  pre_tasks:
+
+    - name: install security depedencies
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - "@Development tools"
+        - libffi-devel
+        - openssl-devel
+
+    - name: update pip
+      pip:
+        name: pip
+        state: latest
+
+    - name: install python dependencies
+      pip:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - requests[security]
+        - libselinux-python
+
+    - name: set selinux config to permissive
+      selinux:
+        state: permissive
+        policy: targeted
+
+    - name: set selinux live to permissive
+      command: '/usr/sbin/setenforce 0'
+
+    - name: install packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - bash-completion
+        - curl
+        - git
+        - htop
+        - mlocate
+        - screen
+        - vim
+        - wget
+
+    - name: remove packages
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - firewalld
+        - firewalld-filesystem
+
