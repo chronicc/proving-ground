@@ -37,3 +37,7 @@ This of course can also be specific to one user instead of `%sudo`.
 Plugin: `plugins/key_authorization.rb`
 
 Ensures the users public key is situated on every virtual machine. This way a passwordless login is possible.
+
+## License
+
+MIT
