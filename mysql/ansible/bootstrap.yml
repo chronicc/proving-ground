@@ -13,7 +13,7 @@
       failed_when: false
 
     - name: install python (redhat)
-      raw: 'yum -y install python'
+      raw: 'yum -y install python python-pip'
       register: install
       changed_when:
         - not install.stdout|search('Nothing to do')
@@ -22,34 +22,7 @@
 
 - hosts: all
   become: true
-  pre_tasks:
-
-    - name: upgrade system (Debian)
-      apt:
-        purge: yes
-        update_cache: yes
-        upgrade: dist
-      when:
-        - ansible_os_family == 'Debian'
-      tags:
-        - skip_ansible_lint
-
-    - name: autoremove packages (Debian)
-      apt:
-        autoremove: yes
-        purge: yes
-      when:
-        - ansible_os_family == 'Debian'
-
-    - name: upgrade systems (RedHat)
-      yum:
-        name: '*'
-        state: latest
-        update_cache: yes
-      when:
-        - ansible_os_family == 'RedHat'
-      tags:
-        - skip_ansible_lint
+  tasks:
 
     - name: install apt-transport-https (Debian)
       apt:

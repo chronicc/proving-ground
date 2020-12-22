@@ -10,10 +10,14 @@
         name: "{{ item }}"
         state: present
       with_items:
+        - bash-completion
         - curl
         - git
         - htop
-        - httpd
+        - libselinux-python
+        - mlocate
+        - mosh
+        - screen
         - php
         - php-mysql
         - vim
@@ -30,4 +34,3 @@
         - NetworkManager-team
         - NetworkManager-tui
         - NetworkManager-wifi
-

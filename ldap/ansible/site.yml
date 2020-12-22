@@ -10,10 +10,15 @@
         name: "{{ item }}"
         state: present
       with_items:
+        - bash-completion
         - curl
         - git
         - htop
+        - libselinux-python
+        - mlocate
+        - mosh
         - openldap-servers
+        - screen
         - vim
 
     - name: remove packages
@@ -23,4 +28,3 @@
       with_items:
         - firewalld
         - firewalld-filesystem
-
