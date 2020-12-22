@@ -32,9 +32,24 @@ Vagrant.configure('2') do |config|
   (1..N).each do |machine_id|
 
     config.vm.define "#{HOSTNAME}-#{machine_id}" do |host|
+
       host.vm.box = 'generic/ubuntu2004'
       host.vm.network 'private_network', type: 'dhcp'
       host.vm.hostname = "#{HOSTNAME}-#{machine_id}.vagrant"
+
+      if machine_id == N
+        host.vm.provision 'bootstrap', type: 'ansible', run: 'once' do |ansible|
+          ansible.compatibility_mode = '2.0'
+          ansible.limit = 'all'
+          ansible.playbook = 'ansible/bootstrap.yml'
+        end
+        host.vm.provision 'site', type: 'ansible', run: 'always' do |ansible|
+          ansible.compatibility_mode = '2.0'
+          ansible.limit = 'all'
+          ansible.playbook = 'ansible/site.yml'
+        end
+      end
+
     end
 
     config.vm.provider :libvirt do |vm|

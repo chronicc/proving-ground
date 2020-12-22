@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+    - name: install packages
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - bash-completion
+        - curl
+        - git
+        - htop
+        - mlocate
+        - screen
+        - vim
+
