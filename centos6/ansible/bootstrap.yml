@@ -36,9 +36,12 @@
         state: present
       when: ansible_os_family == 'RedHat'
 
-    - name: install pip (RedHat)
+    - name: install python dependencies (RedHat)
       yum:
-        name: python-pip
+        name: "{{ item }}"
         state: present
+      with_items:
+        - libselinux-python
+        - python-pip
       when: ansible_os_family == 'RedHat'
 
