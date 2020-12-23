@@ -1,0 +1,37 @@
+---
+- hosts: all
+  become: true
+  tasks:
+
+    - name: install packages
+      apt:
+        name: [
+          'apt-transport-https',
+          'bash-completion',
+          'curl',
+          'git',
+          'htop',
+          'mlocate',
+          'python3-dev',
+          'python3-minimal',
+          'python3-pip',
+          'screen',
+          'vim',
+        ]
+        state: present
+        update_cache: true
+
+    - name: install eks
+      community.general.snap:
+        channel: 'edge'
+        classic: yes
+        name: eks
+        state: present
+
+    - name: start eks
+      raw: 'eks start'
+      register: eks_start
+      changed_when:
+        - eks_start.stdout|regex_search('Started.')
+      failed_when:
+        - not eks_start.stdout|regex_search('Started.')

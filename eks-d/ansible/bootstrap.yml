@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: true
+  gather_facts: no
+  tasks:
+
+    - name: install python dependencies
+      raw: 'apt update && apt -y install python3-dev python3-minimal python3-pip'
+      register: install
+      changed_when:
+        - not install.stdout|regex_search('0 upgraded, 0 newly installed')
+        - not install.stdout|regex_search('command not found')
+      failed_when: false
+
+- hosts: all
+  become: true
+  tasks:
+
+    - name: install apt-transport-https
+      apt:
+        name: apt-transport-https
+        state: present
+      when: ansible_os_family == 'Debian'
+

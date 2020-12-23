@@ -1,0 +1,57 @@
+require_relative '../.plugins/key_authorization'
+
+Vagrant.configure('2') do |config|
+
+  #### CONFIG MACHINES ####
+  BOX_IMAGE = 'generic/ubuntu2004'
+  CPU = 2
+  HOSTNAME = 'eks'
+  MEMORY = 3072
+  N = 3
+  #### END CONFIG #########
+
+
+  # Provider
+  config.vm.provider "libvirt"
+  config.vm.provider :libvirt do |vm|
+    vm.cpus = CPU
+    vm.memory = MEMORY
+  end
+
+
+  # Configuration
+  authorize_key_for_root config, '~/.ssh/id_rsa.pub'
+  config.hostmanager.enabled = false
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+  config.hostmanager.include_offline = false
+  config.vagrant.plugins = [
+    'vagrant-hostmanager',
+    'vagrant-libvirt',
+  ]
+  config.vm.box_check_update = false
+
+
+  # Definition
+  (1..N).each do |machine_id|
+    config.vm.define "#{HOSTNAME}-#{machine_id}" do |host|
+      host.vm.box = BOX_IMAGE
+      host.vm.network 'private_network', ip: "192.168.42.#{machine_id+10}"
+      host.vm.hostname = "#{HOSTNAME}-#{machine_id}.vagrant"
+      host.vm.provision 'shell', inline: 'touch /etc/hosts'
+
+      if machine_id == N
+        host.vm.provision 'site', type: 'ansible', run: 'always' do |ansible|
+          ansible.limit = 'all'
+          ansible.playbook = 'ansible/site.yml'
+        end
+      end
+    end
+  end
+
+
+  # Hostmanager workaround (https://github.com/devopsgroup-io/vagrant-hostmanager/issues/127)
+  config.vm.provision :hostmanager
+
+end
