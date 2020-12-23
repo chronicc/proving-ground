@@ -8,7 +8,7 @@ Vagrant test environment with prepared scenarios.
 ### Prepare workstation
 
 1. Install vagrant. You can download the latest version [here](https://www.vagrantup.com/downloads.html).
-1. Install virtualbox and/or libvirt including dev dependencies (e.g. libvirt-dev on debian distributions).
+1. Install virtualbox (support will be reduced subsequently) and libvirt including dev dependencies (e.g. libvirt-dev on debian distributions).
 1. Install vagrant plugins.
     ```
     vagrant plugin install vagrant-hostmanager
@@ -35,6 +35,12 @@ vagrant up
 
 ```
 vagrant destroy -f
+```
+
+### Stop environment
+
+```
+vagrant halt
 ```
 
 ### Update environment
@@ -67,7 +73,7 @@ If a machine was not added to the hosts file after being created, run `vagrant h
 
 Plugin: `plugins/key_authorization.rb`
 
-Ensures the users public key is situated on every virtual machine. This way a passwordless login is possible.gg
+Ensures the users public key is situated on every virtual machine. This way a passwordless login is possible.
 
 ### Ansible Provisioning
 
