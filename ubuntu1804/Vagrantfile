@@ -1,0 +1,54 @@
+require_relative '../.plugins/key_authorization'
+
+Vagrant.configure('2') do |config|
+
+  #### CONFIG MACHINES ####
+  BOX_IMAGE = 'generic/ubuntu1804'
+  CPU = 4
+  HOSTNAME = 'ubuntu1804'
+  MEMORY = 4096
+  N = 1
+  #### END CONFIG #########
+
+  config.vm.provider "libvirt"
+
+  authorize_key_for_root config, '~/.ssh/id_rsa.pub'
+  config.hostmanager.enabled = true
+  config.hostmanager.manage_host = true
+  config.hostmanager.manage_guest = true
+  config.hostmanager.ignore_private_ip = false
+  config.hostmanager.include_offline = false
+  config.vagrant.plugins = [
+    'vagrant-hostmanager',
+    'vagrant-libvirt',
+  ]
+
+  (1..N).each do |machine_id|
+
+    config.vm.define "#{HOSTNAME}-#{machine_id}" do |host|
+
+      host.vm.box = BOX_IMAGE
+      host.vm.network 'private_network', type: 'dhcp'
+      host.vm.hostname = "#{HOSTNAME}-#{machine_id}.vagrant"
+
+      if machine_id == N
+        host.vm.provision 'site', type: 'ansible', run: 'always' do |ansible|
+          ansible.limit = 'all'
+          ansible.playbook = 'ansible/site.yml'
+        end
+      end
+
+    end
+
+    config.vm.provider :libvirt do |vm|
+      vm.cpus = CPU
+      vm.memory = MEMORY
+    end
+
+    config.vm.provider :virtualbox do |vm|
+      vm.customize ["modifyvm", :id, "--memory", MEMORY]
+      vm.customize ["modifyvm", :id, "--cpus", CPU]
+    end
+
+  end
+end
