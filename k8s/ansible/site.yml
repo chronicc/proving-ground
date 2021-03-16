@@ -1,0 +1,124 @@
+---
+- hosts: all
+  become: true
+  handlers:
+    - name: docker // restart daemon
+      service:
+        name: docker
+        state: restarted
+
+  tasks:
+    - name: install packages
+      apt:
+        name:
+          [
+            'apt-transport-https',
+            'bash-completion',
+            'curl',
+            'git',
+            'htop',
+            'mlocate',
+            'python3-dev',
+            'python3-minimal',
+            'python3-pip',
+            'screen',
+            'vim',
+          ]
+        update_cache: true
+        state: present
+
+    - name: swap // disable
+      replace:
+        dest: /etc/fstab
+        regexp: '^([^#].*?UUID=.*swap.*)$'
+        replace: '# \1'
+      register: swap_disabled
+
+    - name: swap // turn off
+      shell: |
+        swapoff -a
+      when: swap_disabled.changed
+
+    - name: modules // enable netfilter
+      copy:
+        dest: /etc/modules-load.d/k8s.conf
+        content: |
+          br_netfilter
+      register: modules_enable_netfilter
+
+    - name: modules // load netfilter
+      modprobe:
+        name: br_netfilter
+        state: present
+      when: modules_enable_netfilter.changed
+
+    - name: sysctl // enable bridge traffic for iptables
+      copy:
+        dest: /etc/sysctl.d/k8s.conf
+        content: |
+          net.bridge.bridge-nf-call-ip6tables = 1
+          net.bridge.bridge-nf-call-iptables = 1
+      register: sysctl_enable_bridge_traffic
+
+    - name: sysctl // reload system rules
+      shell: |
+        sysctl --system
+      when: sysctl_enable_bridge_traffic.changed
+
+    - name: docker // import gpg key
+      apt_key:
+        state: present
+        url: https://download.docker.com/linux/ubuntu/gpg
+
+    - name: docker // add repository
+      apt_repository:
+        repo: 'deb [arch=amd64] https://download.docker.com/linux/{{ ansible_distribution|lower }} {{ ansible_distribution_release }} stable'
+        filename: docker
+        state: present
+
+    - name: docker // install
+      apt:
+        name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+        update_cache: true
+        state: present
+
+    - name: docker // configure daemon
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "exec-opts": ["native.cgroupdriver=systemd"],
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "100m"
+            },
+            "storage-driver": "overlay2"
+          }
+      notify:
+        - docker // restart daemon
+
+    - name: k8s // import gpg key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: k8s // add repository
+      apt_repository:
+        repo: 'deb [arch=amd64] https://apt.kubernetes.io/ kubernetes-xenial main'
+        filename: k8bernetes
+        state: present
+
+    - name: k8s // install kubernetes cli tools
+      apt:
+        name: ['kubelet', 'kubeadm', 'kubectl']
+        update_cache: true
+        state: present
+
+    - name: k8s // exclude kubernetes cli tools from automatic updates
+      dpkg_selections:
+        name: '{{ item }}'
+        selection: hold
+      loop:
+        - kubeadm
+        - kubectl
+        - kubelet
