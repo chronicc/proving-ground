@@ -1,0 +1,7 @@
+---
+- hosts: k8s-1
+  become: true
+  tasks:
+    - name: k8s // check if node already joined cluster
+      stat:
+        path: /etc/kubernetes/kubelet.conf

@@ -1,0 +1,54 @@
+---
+- hosts: k8s-1
+  become: true
+  tasks:
+    - name: k8s // check if control plane is already initialized
+      stat:
+        path: /etc/kubernetes/manifests/kube-controller-manager.yaml
+      register: k8s_controller_manager_config
+
+    - name: k8s // initialize control plane
+      shell: kubeadm init
+      when: not k8s_controller_manager_config.stat.exists
+
+    - name: k8s // ensure the .kube directory exists for root user
+      file:
+        path: /root/.kube
+        state: directory
+        mode: '0755'
+
+    - name: k8s // ensure kubectl config is available for root user
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /root/.kube/config
+        remote_src: true
+
+    - name: k8s // export kubectl config
+      fetch:
+        src: /etc/kubernetes/admin.conf
+        dest: ../
+        flat: true
+
+    - name: k8s // install network controller
+      shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+    - name: k8s // get join token
+      shell: kubeadm token list | head -qn2 | tail -n1 | awk '{ print $1 }'
+      register: k8s_join_token
+
+    - name: k8s // get discovery token ca cert hash
+      shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+      register: k8s_discovery_token_ca_cert_hash
+
+- hosts: k8s-2
+  become: true
+  tasks:
+    - name: k8s // check if node already joined cluster
+      stat:
+        path: /etc/kubernetes/kubelet.conf
+      register: k8s_kubelet_config
+
+    # takes about 70 seconds until the node becomes ready
+    - name: k8s // join node to cluster
+      shell: 'kubeadm join {{ hostvars["k8s-1"]["ansible_default_ipv4"]["address"] }}:6443 --token {{ hostvars["k8s-1"]["k8s_join_token"]["stdout"] }} --discovery-token-ca-cert-hash sha256:{{ hostvars["k8s-1"]["k8s_discovery_token_ca_cert_hash"]["stdout"] }}'
+      when: not k8s_kubelet_config.stat.exists

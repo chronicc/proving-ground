@@ -8,7 +8,7 @@
         state: restarted
 
   tasks:
-    - name: install packages
+    - name: install generic packages
       apt:
         name:
           [
@@ -30,7 +30,7 @@
     - name: swap // disable
       replace:
         dest: /etc/fstab
-        regexp: '^([^#].*?UUID=.*swap.*)$'
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
         replace: '# \1'
       register: swap_disabled
 
@@ -78,9 +78,17 @@
 
     - name: docker // install
       apt:
-        name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+        name:
+          [
+            'docker-ce=5:19.03.15~3-0~ubuntu-focal',
+            'docker-ce-cli=5:19.03.15~3-0~ubuntu-focal',
+            'containerd.io',
+          ]
         update_cache: true
+        force: true
         state: present
+      notify:
+        - docker // restart daemon
 
     - name: docker // configure daemon
       copy:

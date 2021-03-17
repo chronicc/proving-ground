@@ -11,6 +11,7 @@ Vagrant test environment with prepared scenarios.
 1. Install virtualbox (support will be reduced subsequently) and libvirt including dev dependencies (e.g. libvirt-dev on debian distributions).
 1. Install vagrant plugins.
     ```
+    vagrant plugin install vagrant-hosts
     vagrant plugin install vagrant-hostmanager
     vagrant plugin install vagrant-libvirt
     vagrant plugin install vagrant-mutate
