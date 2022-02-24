@@ -1,23 +1,27 @@
 ---
 - hosts: all
   become: true
+  vars:
+  - ruby_version: 2.0
+  roles:
+  - geerlingguy.ruby
   tasks:
-
-    - name: install packages
-      apt:
-        name: [
-          'apt-transport-https',
-          'bash-completion',
-          'curl',
-          'git',
-          'htop',
-          'mlocate',
-          'python3-dev',
-          'python3-minimal',
-          'python3-pip',
-          'screen',
-          'vim',
-        ]
-        state: present
-        update_cache: true
+  - name: install packages
+    apt:
+      name: [
+        'apt-transport-https',
+        'bash-completion',
+        'curl',
+        'git',
+        'htop',
+        'mlocate',
+        'python3-dev',
+        'python3-minimal',
+        'python3-pip',
+        'screen',
+        'vim',
+        'wget',
+      ]
+      state: present
+      update_cache: true
 

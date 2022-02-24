@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "cc.chroni.proving-ground"
+version = "1.0.0"
+description = "Spawn virtual machines on demand."
+authors = ["Thomas Steinert"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+ansible = "2.9.10"
+python = "^3.6"
+
+[tool.poetry.dev-dependencies]
+ansible-lint = "^5.0"
+docker = "^4.4"
+molecule = "^3.2"
+molecule-docker = "^0.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
