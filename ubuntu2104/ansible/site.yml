@@ -1,8 +1,9 @@
 ---
 - hosts: all
   become: true
+  roles:
+    - geerlingguy.docker
   tasks:
-
     - name: install packages
       apt:
         name: [
@@ -20,4 +21,3 @@
         ]
         state: present
         update_cache: true
-
