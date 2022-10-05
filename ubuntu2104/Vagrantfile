@@ -12,7 +12,7 @@ Vagrant.configure('2') do |config|
 
   config.vm.provider "libvirt"
 
-  authorize_key_for_root config, '~/.ssh/id_rsa.pub'
+  authorize_key_for_root config, '~/.ssh/id_ecdsa.pub'
   config.hostmanager.enabled = true
   config.hostmanager.manage_host = true
   config.hostmanager.manage_guest = true
