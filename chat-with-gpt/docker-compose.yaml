@@ -1,0 +1,12 @@
+---
+version: '3.8'
+
+services:
+  chat:
+    image: ghcr.io/cogentapps/chat-with-gpt:release
+    ports:
+      - 127.0.0.1:3000:3000
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+
