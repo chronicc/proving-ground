@@ -1,5 +1,0 @@
-services:
-  openai:
-    apiKey:
-  elevenlabs:
-    apiKey:
