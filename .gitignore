@@ -1,7 +1,8 @@
+.ansible/
 .swp
-.ansible/roles/*/meta/.galaxy_install_info
-.vagrant
-.vscode
+.vagrant/
+.venv/
+.vscode/
 *.retry
 admin.conf
-tmp
+tmp/
