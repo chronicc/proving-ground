@@ -1,23 +1,20 @@
-[tool.poetry]
+[project]
 name = "cc.chroni.proving-ground"
 version = "1.0.0"
-description = "Proving ground for application deployments."
-authors = ["Thomas Steinert"]
-license = "MIT"
+description = "Proving ground for application deployments"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ansible",
+    "docker",
+    "pywinrm",
+]
 
-[tool.poetry.dependencies]
-ansible = "^8"
-ansible-core = "^2"
-docker = "^6"
-python = ">=3.10"
-pywinrm = ">=0.3.0"
+[dependency-groups]
+dev = [
+    "ansible-lint",
+    "molecule",
+    "molecule-docker",
+    "pre-commit",
+]
 
-[tool.poetry.dev-dependencies]
-ansible-lint = { version = "^6", markers = "platform_system != 'Windows'" }
-molecule = "^6"
-molecule-docker = "^2"
-pre-commit = "^2"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
